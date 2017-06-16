@@ -1,0 +1,133 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<meta charset="utf-8">
+	<title>Project 2</title>
+	<meta name="description" content="Biểu đồ cảm biến nhiệt độ">
+	<script src="jquery-3.2.1.min.js" type="text/javascript"></script>
+	<script src="/socket.io/socket.io.js"></script>
+	<script src="processor.js"></script>
+	<script type="text/javascript" src="http://static.fusioncharts.com/code/latest/fusioncharts.js"></script>
+	<script type="text/javascript" src="http://static.fusioncharts.com/code/latest/themes/fusioncharts.theme.fint.js?cacheBust=56"></script>
+	<script type="text/javascript">
+	FusionCharts.ready(function(){
+			
+
+			var fusioncharts = new FusionCharts({
+				id: "RealTimeChart",
+				type: 'realtimeline',
+				renderAt: 'chart-container',
+				width: '650',
+				height: '450',
+				dataFormat: 'json',
+				dataSource: {
+					"chart": {
+						"caption": "Real-time chart",
+						"subCaption": "NUC140VE3CN",
+						"showrealtimevalue": "1",
+						"borderAlpha": "0",
+						"xAxisName": "Time",
+						"yAxisName": "Temperature \u00B0C",
+						"numberSuffix": " \u00B0C",
+						"usePlotGradientColor": "0",
+						"canvasBorderAlpha": "20",
+						"refreshinterval": "1",
+						"numdisplaysets": "10",
+						"slantLabels": "1",
+						"showLegend": "0",
+						"plotBorderAlpha": "0",
+						"bgAlpha": "0",
+						"showlabels": "1",
+						"animation": "0",
+						"showValues": "0",
+						"useMessageLog": "1",
+						"showRealTimeValue": "0",
+						"showRTmenuItem": "1",
+						"messageGoesToJS": "1",
+						"messageJSHandler": "displayData",
+						"messagePassAllToJS": "1",
+						"theme": "fint"
+
+					},
+					"categories": [{
+						"category": [{
+							"label": "Day Start"
+						}]
+					}],
+					"dataset": [{
+						"seriesname": "Temperature",
+						"alpha": "100",
+						"anchoralpha": "60",
+						"anchorRadius": "4",
+						"anchorBgColor": "#",
+						"linethickness": "2",
+						"data": [{
+							"value": "0"
+						}]
+
+					}],
+					"alerts": {
+						"alert": [{
+							"action": "callJS",
+							"param": ""
+						}]
+					}
+				},
+
+				"events": {
+					'beforerender': function(evt, args) {
+						var controllers = document.createElement('div');
+						controllers.setAttribute('id', 'tableView');
+	            		// Create  div
+	            		controllers.innerHTML = '<div id="details" style=" width:260px;height:80px;border: 2px solid #ddd;margin-left:160px"> <div style ="font-family:Arial;font-size: 15px;text-align:center;font-weight: bold;height:25px;border-bottom: 2px solid #ddd">Current Status</div><div id="data" style="font-family:Arial;font-size: 15px;text-align:center;font-weight: bold;padding-top:10px;color: #008ee4"></div></div>';
+	            			//Display container div and write table
+	            		args.container.parentNode.insertBefore(controllers, args.container.nextSibling);
+	            	},
+		            'rendered': function(evt, args) {
+		            	//JS Message handler function, displaying the current data in a div
+		            	displayData = function(strMsgId, strMsgTitle, strMsgText, strMsgType) {
+		            		var div = document.getElementById('data');
+		            		div.innerHTML = strMsgTitle + strMsgText;
+		            	}
+		            	function addLeadingZero(num) {
+		            		return (num <= 9) ? ("0" + num) : num;
+		            	}
+
+		            	evt.sender.chartInterval = setInterval(function() {
+							// Get reference to the chart using its ID
+					        var chartRef = evt.sender;
+					        // We need to create a querystring format incremental update, containing
+					        // label in hh:mm:ss format
+					        // and a value (random).
+					        var currDate = new Date();
+					        var label = addLeadingZero(currDate.getHours()) 
+								+ ":" + addLeadingZero(currDate.getMinutes()) 
+								+ ":" + addLeadingZero(currDate.getSeconds());
+					        var randomValue = Math.floor(Math.random() * 100);
+					        // Build Data String in format &label=...&value=...
+					        var strData = "&label=" + label + "&value=" 
+								+ randomValue + "&msgTitle=Temperature at &msgText=" 
+								+ label 
+								+ " is " + randomValue + " \u00B0C" 
+								+ ((randomValue > 40) ? " WARNING !!! HOT" : "");
+					        // Feed it to chart.
+					        chartRef.feedData(strData);
+					    }, 2000);
+		            },
+
+	            	'disposed': function(evt, arg) {
+	            		clearInterval(evt.sender.chartInterval);
+	            	}
+	            }
+	        });
+			fusioncharts.render();
+		});				
+	</script>
+
+</head>
+
+<body>
+	<div id="chart-container">FusionCharts XT</div>
+	<div>Hello <span id = "currentUser">Kien</span></div>
+</body>
+</html>					

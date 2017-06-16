@@ -19,10 +19,12 @@ app.set('view engine', 'ejs')
 // console.log(config.getDbConnectionString())
 mongoose.connect(config.getDbConnectionString())
 
-var setupController = require('./api/controllers/setupController')
-setupController(app)
-var todoController = require('./api/controllers/todoController')
-todoController(app)
+// var setupController = require('./api/controllers/setupController')
+// setupController(app)
+// var todoController = require('./api/controllers/todoController')
+// todoController(app)
+var chartController = require('./api/controllers/chartController')
+chartController(app)
 
 app.get('/', (req, res)=>{
     res.render('index.ejs')
