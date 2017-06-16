@@ -1,28 +1,14 @@
 var Charts = require('../models/chartModel')
 
-module.exports = (app) => {
-    
-    app.get('/api/chart', (req, res)=>{
+module.exports = (app, socket) => {
 
-        // setup some value of chart
-        var seedChart = [
-            {
-                gas: 1000,
-                temp : 30
-            },
-            {
-                gas: 300,
-                temp: 39
-            },
-            {
-                gas: 700,
-                temp: 35
-            }
-        ]
-
-        Charts.create(seedChart, (err, results)=>{
-
-            res.render('bieudo.ejs')   
-        })
+    socket.on('data', (data) => {
+        console.log('vao day OK')
+        if(data!=null){
+            data = JSON.parse(data)
+            var temp = data.temp
+            console.log(temp)
+            $("$currentUser").html(temp)
+        }
     })
 }

@@ -12,29 +12,23 @@ var Charts = require('./api/models/chartModel')
 var server = net.createServer()
 
 server.on('connection', (socket) => {
-    console.log('DAY LA TAO')
-
-    var seedChart = [{
-            gas: 10000,
-            temp: 300
-        },
-        {
-            gas: 10000,
-            temp: 39
-        },
-        {
-            gas: 10000,
-            temp: 55
-        }
-    ]
-
-    Charts.create(seedChart, (err, results) => {
-
-        // res.render('bieudo.ejs')
-    })
+    console.log('Ket noi')
 
     socket.on('data', (data) => {
-        console.log(data.toString())
+        console.log("Da connect!" + data)
+
+        var gas = data / 100000
+        var temp = data % 100000
+
+        var chart = new Charts({
+            gas: gas,
+            temp: temp
+        })
+
+        chart.save((err, chart) => {
+            if (err) console.error(err)
+            console.dir('ok'+chart)
+        })
     })
 })
 

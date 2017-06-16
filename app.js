@@ -2,35 +2,61 @@ var express = require('express')
 var bodyParser = require('body-parser')
 var morgan = require('morgan')
 var mongoose = require('mongoose')
-
+var fs = require('fs')
 var config = require('./config')
+var ejs = require('ejs')
 
 var app = express()
 var port = process.env.PORT || 3000
 
-app.use('/assets', express.static(__dirname + '/public'))
+app.use(express.static('/public'))
 app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended : true}))
+app.use(bodyParser.urlencoded({ extended: true }))
 app.use(morgan('dev'))
 
 app.set('view engine', 'ejs')
 
-// db info
-// console.log(config.getDbConnectionString())
+var server = require('http').createServer(app)
+var io = require('socket.io').listen(server)
+
 mongoose.connect(config.getDbConnectionString())
+var Charts = require('./api/models/chartModel.js')
 
-// var setupController = require('./api/controllers/setupController')
-// setupController(app)
-// var todoController = require('./api/controllers/todoController')
-// todoController(app)
-var chartController = require('./api/controllers/chartController')
-chartController(app)
+io.sockets.on('connection', (socket) => {
 
-app.get('/', (req, res)=>{
-    res.render('index.ejs')
+    console.log('Connected!')
+
+    // sau 5s emit 1 lan
+    setInterval(() => {
+        
+        Charts.findOne({}, {}, { sort: { 'created_at': 1 } }, (err, post) => {
+            console.log(post)
+            var obj = {
+                gas: post._doc.gas,
+                temp: post._doc.temp
+            }
+            console.log('data: ' + JSON.stringify(obj))
+            var temp = obj.temp
+            console.log(temp)
+            io.sockets.emit('SERVER_SEND_DATA', temp)
+        })
+    }, 2000)
+
+
 })
 
-app.listen(port, ()=>{
-    console.log('App listening on port: ', port)
+var ioc = require('socket.io-client')('http://localhost:3000')
+ioc.on('connect', () => {
+    ioc.on('SERVER_SEND_DATA', (data) => {
+        console.log(data)
+    })
 })
 
+// var ioc2 = require('./public/processor')
+
+
+app.get('/', (req, res) => {
+    res.render('bieudo.ejs')
+})
+
+server.listen(process.env.PORT || 3000)

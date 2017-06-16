@@ -1,0 +1,7 @@
+Đầu tiên:
+- Mày clone git này tải về máy (biết chứ?)
+- Chạy nodemon apptcp.js -> port 5000 với TCP
+- Bật Hercules lên và gửi dữ liệu (nhớ đúng địa chỉ ip nhé)
+- Chạy 1 command khác với nodemon app.js -> port 3000 với Socket.io
+- Hiện tại t vẫn chưa thêm được vào biểu đồ, chỉ jQuery được thôi
+- Viết báo cáo tạm trước nhé!
