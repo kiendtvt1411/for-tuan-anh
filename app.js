@@ -33,11 +33,10 @@ io.sockets.on('connection', (socket) => {
             console.log(post)
             var obj = {
                 gas: post._doc.gas,
-                temp: post._doc.temp
+                temp: Math.floor((Math.random() * 45) + 1)
             }
             console.log('data: ' + JSON.stringify(obj))
             var temp = obj.temp
-            console.log(temp)
             io.sockets.emit('SERVER_SEND_DATA', temp)
         })
     }, 2000)
@@ -45,12 +44,12 @@ io.sockets.on('connection', (socket) => {
 
 })
 
-var ioc = require('socket.io-client')('http://localhost:3000')
-ioc.on('connect', () => {
-    ioc.on('SERVER_SEND_DATA', (data) => {
-        console.log(data)
-    })
-})
+// var ioc = require('socket.io-client')('http://localhost:3000')
+// ioc.on('connect', () => {
+//     ioc.on('SERVER_SEND_DATA', (data) => {
+//         console.log(data)
+//     })
+// })
 
 // var ioc2 = require('./public/processor')
 
